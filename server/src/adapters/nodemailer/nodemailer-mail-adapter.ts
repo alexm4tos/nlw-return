@@ -15,11 +15,16 @@ const transport = nodemailer.createTransport({
 
 export class NodemailerMailAdapter implements MailAdapter {
 	async sendMail({ body, subject }: SendMailData) {
-		await transport.sendMail({
-			from: 'Feedget team <hello@feedget.tld>',
-			to: 'Site Owner <owner@feedget.tld>',
-			subject,
-			html: body,
-		});
+		if (
+			process.env.SMTP_HOST !== undefined &&
+			process.env.SMTP_HOST?.length > 0
+		) {
+			await transport.sendMail({
+				from: String(process.env.SMTP_FROM),
+				to: String(process.env.SMTP_TO),
+				subject,
+				html: body,
+			});
+		}
 	}
 }
